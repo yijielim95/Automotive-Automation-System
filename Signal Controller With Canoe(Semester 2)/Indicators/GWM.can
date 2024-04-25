@@ -1,0 +1,113 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+variables
+{
+ int direction;
+ int state;
+ msTimer indPeriod; 
+}
+
+on key 'l'
+{
+  direction = 1;
+  setTimerCyclic(indPeriod,500);
+  state = 1;
+}
+
+on key 'r'
+{
+  direction = 2;
+  setTimerCyclic(indPeriod,500);
+  state = 1;
+}
+
+on sysvar sysvar::IndicatorSwitch
+{
+  if(@this == 1){
+    direction = 1;
+    setTimerCyclic(indPeriod,500);
+    state = 1;
+  }
+  if(@this == 2){
+    direction = 2;
+    setTimerCyclic(indPeriod,500);
+    state = 1;
+  }
+  if(@this == 0){
+    cancelTimer(indPeriod);
+    direction = 0;
+    $DirectionIndicationINST_UB = 1;
+    $DirectionIndicationINST = 0;
+  }  
+}
+
+on key 'h'
+{
+  direction = 3;
+  setTimerCyclic(indPeriod,500);
+  state = 1;
+}
+
+on sysvar sysvar::HazzleSwitch
+{
+  if(@this == 1){
+    direction = 3;
+    setTimerCyclic(indPeriod,500);
+    state = 1;
+  }
+  if(@this == 0){
+    cancelTimer(indPeriod);
+    direction = 0;
+    $DirectionIndicationINST_UB = 1;
+    $DirectionIndicationINST = 0;
+  } 
+}
+
+on key 'o'
+{
+  cancelTimer(indPeriod);
+  direction = 0;
+  $DirectionIndicationINST_UB = 1;
+  $DirectionIndicationINST = 0;
+  
+}
+
+on timer indPeriod
+{
+  if ( state==0 ) //OFF
+  {
+    $DirectionIndicationINST_UB = 1;
+    $DirectionIndicationINST = direction;
+    state = 1; //next state is ON
+  }
+  else{
+    $DirectionIndicationINST_UB = 1;
+    $DirectionIndicationINST = 0;
+    state = 0; //next state is OFF
+  }
+}
+
+on signal FrontTSetRightCmd
+{
+ if($FrontTSetRightCmd <20 ){
+    direction = 1;
+    setTimerCyclic(indPeriod,500);
+    state = 1;
+  }
+  if($FrontTSetRightCmd > 20){
+    direction = 2;
+    setTimerCyclic(indPeriod,500);
+    state = 1;
+  }
+  if($FrontTSetRightCmd == 20){
+    cancelTimer(indPeriod);
+    direction = 0;
+    $DirectionIndicationINST_UB = 1;
+    $DirectionIndicationINST = 0;
+  }   
+}
+
